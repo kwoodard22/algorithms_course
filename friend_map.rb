@@ -7,21 +7,18 @@
 # your algorithm should be mlogn or better and use extra space proportional to n.
 
 # THOUGHT PROCESS:
-# Go through each timestamp
+# Loop through each timestamp
 # Check if pairs are connected through root
-# If not connected, join them
+  # YES -> Continue
+  # NO -> Connect them, decrease unique root count, & continue
+  # Keep track of different roots until 1 (root_count)
 
 # What are we checking for?
 # Want each member to have the same root (meaning connected)
 
-# How do we go through timestamps & check if all are connected?
-# Loop through timestamps, check if connected.
-   # YES -> Keep track of different roots until 1 (root_count)
-   # NO -> Connect, decrease unique root count, & continue
-
 # TODO: Have random generator prevent duplicate friendships or friendship with self.
 
-require 'pry'
+# require 'pry'
 require_relative 'generator'
 
 class FriendMap
@@ -30,9 +27,7 @@ class FriendMap
   def initialize(members_count, timestamps)
     @members = members_count
     @timestamps = timestamps
-    @id = {}
-    @size = {}
-    @root_count = members
+    @root_count = members_count
   end
 
   def run
@@ -54,6 +49,8 @@ class FriendMap
   private
 
   def setup_id_and_size_objects
+    @id = {}
+    @size = {}
     (1..members).to_a.each do |i|
       id[i] = i 
       size[i] = 1
