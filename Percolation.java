@@ -8,6 +8,7 @@
  ******************************************************************************/
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -85,7 +86,6 @@ public class Percolation {
         
         for (int i = 0; i < grid[0].length; i++) {
             if (uf.connected(number[row][col], number[0][i])) {
-                System.out.println("Last Row: " + number[row][col] + " is connected to Top Row: " + number[0][i]);
                 return true;
             }
         }
@@ -94,7 +94,6 @@ public class Percolation {
     
     // number of open sites
     public int numberOfOpenSites() {
-        System.out.println(openSitesCount);
         return openSitesCount;
     }
     
@@ -127,11 +126,19 @@ public class Percolation {
         Percolation p = new Percolation(n);
         
         while (!p.percolates()) {
-            int randomX = StdRandom.uniform(n);
-            int randomY = StdRandom.uniform(n);
-            System.out.println("x: " + randomX + ", y: " + randomY);
-            p.open(randomX, randomY);
-            p.numberOfOpenSites();
+         p.open(StdRandom.uniform(n), StdRandom.uniform(n));
         }
+        double estimate = (float) p.numberOfOpenSites() / (n*n);
+        System.out.println("Estimate of percolation threshold: " + estimate);
     }
-}   
+}
+
+public class PercolationStats {
+   public PercolationStats(int n, int trials)    // perform trials independent experiments on an n-by-n grid
+   public double mean()                          // sample mean of percolation threshold
+   public double stddev()                        // sample standard deviation of percolation threshold
+   public double confidenceLo()                  // low  endpoint of 95% confidence interval
+   public double confidenceHi()                  // high endpoint of 95% confidence interval
+
+   public static void main(String[] args)        // test client (described below)
+}
