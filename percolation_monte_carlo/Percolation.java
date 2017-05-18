@@ -28,13 +28,13 @@ public class Percolation {
         
         for (int i = 0; i < n; i++) {
             uf.union(virtualTop, indexOf(0, i));
-            uf.union(virtualBottom, indexOf(n, i));
+            uf.union(virtualBottom, indexOf(n - 1, i));
         }
     }
     
     // open a site if is not open already & connect to neighors
     public void open(int row, int col) {
-        checkOutOfBoundsError(row, col);
+        validateRange(row, col);
         
         if (!isOpen(row, col)) {
             grid[row][col] = true;
@@ -45,13 +45,13 @@ public class Percolation {
     
     // is site open?
     public boolean isOpen(int row, int col) { 
-        checkOutOfBoundsError(row, col);
+        validateRange(row, col);
         return grid[row][col];
     }
     
     // is site connected to top numbers (i.e. virtual top)?
     public boolean isFull(int row, int col) {
-        checkOutOfBoundsError(row, col);
+        validateRange(row, col);
         return uf.connected(virtualTop, indexOf(row, col));
     }
     
@@ -60,7 +60,6 @@ public class Percolation {
         return openSitesCount;
     }
     
-    // does the system percolate?
     // is site connected to top and bottom?
     public boolean percolates() {
         return uf.connected(virtualTop, virtualBottom);
@@ -75,12 +74,14 @@ public class Percolation {
         Percolation p = new Percolation(n);
         
         while (!p.percolates()) {
-            p.open(StdRandom.uniform(n), StdRandom.uniform(n));
+            int x = StdRandom.uniform(n);
+            int y = StdRandom.uniform(n);
+            System.out.println("Grid[" + x + "][" + y + "]");
+            p.open(x, y);
         }
-        double estimate = (float) p.numberOfOpenSites() / n;
+        double estimate = (float) p.numberOfOpenSites() / (n*n);
         System.out.println("Estimate of percolation threshold: " + estimate);
     }
-
     
     /**************************
      * Private utility methods
@@ -91,8 +92,8 @@ public class Percolation {
     }
     
     // throws error if number is not in range
-    private void checkOutOfBoundsError(int row, int col) {
-        if (row < 0 || row > (grid.length - 1) || col < 0 || col > (grid[0].length - 1))  {
+    private void validateRange(int row, int col) {
+        if (row < 0 || row > (N - 1) || col < 0 || col > (N - 1))  {
             throw new java.lang.IndexOutOfBoundsException("Number not within range");
         }
     }
