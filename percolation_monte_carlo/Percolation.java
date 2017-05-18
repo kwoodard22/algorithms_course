@@ -65,24 +65,6 @@ public class Percolation {
         return uf.connected(virtualTop, virtualBottom);
     }
     
-    public static void main(String[] args) {
-        int n = StdIn.readInt();
-        if (n <= 0) { 
-            throw new java.lang.IllegalArgumentException("Number must be greater than zero.");
-        }
-        
-        Percolation p = new Percolation(n);
-        
-        while (!p.percolates()) {
-            int x = StdRandom.uniform(n);
-            int y = StdRandom.uniform(n);
-            System.out.println("Grid[" + x + "][" + y + "]");
-            p.open(x, y);
-        }
-        double estimate = (float) p.numberOfOpenSites() / (n*n);
-        System.out.println("Estimate of percolation threshold: " + estimate);
-    }
-    
     /**************************
      * Private utility methods
      **************************/
