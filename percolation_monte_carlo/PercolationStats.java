@@ -2,6 +2,7 @@
  *  Compilation:  javac PercolationStats.java
  *  Execution:    java PercolationStats
  *  Dependencies: StdRandom.java StdStats.java Percolation.java
+ *  Date: May 17, 2017
  *
  *  Calculates stats for percolation thresholds
  *
@@ -13,55 +14,58 @@ import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class PercolationStats {
-   private StdStats stats;
    private double[] thresholds;
    
-   // perform trials independent experiments on an n-by-n grid
+   // Perform trials independent experiments on an n-by-n grid
    public PercolationStats(int n, int trials) {  
        thresholds = new double[trials];
        for (int i = 0; i < trials; i++) {
            Percolation p = new Percolation(n);
            while (!p.percolates()) {
-               p.open(StdRandom.uniform(n), StdRandom.uniform(n));
+               p.open(StdRandom.uniform(1, n + 1), StdRandom.uniform(1, n + 1));
            }
            double estimate = (float) p.numberOfOpenSites() / (n*n);
            thresholds[i] = estimate; 
        }
    }
    
-   // sample mean of percolation threshold
+   // Sample mean of percolation threshold
    public double mean() {
        return StdStats.mean(thresholds);
    }
    
-   // sample standard deviation of percolation threshold
+   // Sample standard deviation of percolation threshold
    public double stddev() {
        return StdStats.stddev(thresholds);
    }
    
-   // low  endpoint of 95% confidence interval
+   // Low endpoint of 95% confidence interval
    public double confidenceLo() {
        return mean() - 1.96 * stddev();
    }
        
-   // high endpoint of 95% confidence interval
+   // High endpoint of 95% confidence interval
    public double confidenceHi() {
        return mean() + 1.96 * stddev();
    }
-
+   
+   // MAIN
    public static void main(String[] args) {
        StdOut.println("Enter number for n x n grid:");
        int n = StdIn.readInt();
+           
        StdOut.println("Enter number for total trials:");
        int t = StdIn.readInt();
        
-       if (n <= 0 || t <= 0) {
-           throw new java.lang.IllegalArgumentException("Number and trials should be greater than zero.");
+       if (n < 1 || t < 1) {
+           throw new java.lang.IllegalArgumentException(
+               "Number should be greater than 0."
+           );
        }
        
        PercolationStats stats = new PercolationStats(n, t);
-       StdOut.println("mean                    = " + stats.mean());
-       StdOut.println("sample stddev           = " + stats.stddev());
+       StdOut.println("Mean                    = " + stats.mean());
+       StdOut.println("Stddev                  = " + stats.stddev());
        StdOut.print("95% confidence interval = ");
        StdOut.println("[" + stats.confidenceLo() + ", " + stats.confidenceHi() + "]");
    }

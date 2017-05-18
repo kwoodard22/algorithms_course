@@ -7,6 +7,7 @@
  *
  ******************************************************************************/
 import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
@@ -18,7 +19,7 @@ public class Percolation {
     private int openSitesCount;
     private WeightedQuickUnionUF uf;
     
-    // create n-by-n grid with all sites blocked & link to virtual top & bottom
+    // Create n-by-n grid with all sites blocked & link to virtual top & bottom
     public Percolation(int n) {
         N = n;
         uf = new WeightedQuickUnionUF((n*n) + 2);
@@ -26,27 +27,27 @@ public class Percolation {
         virtualBottom = n * n + 1;
         grid = new boolean[n][n];
         
-        for (int i = 0; i < n; i++) {
-            uf.union(virtualTop, indexOf(0, i));
-            uf.union(virtualBottom, indexOf(n - 1, i));
+        for (int i = 1; i < n + 1; i++) {
+            uf.union(virtualTop, indexOf(1, i));
+            uf.union(virtualBottom, indexOf(n, i));
         }
     }
     
-    // open a site if is not open already & connect to neighors
+    // Opens a site if is not open & connects it to neighbors
     public void open(int row, int col) {
         validateRange(row, col);
         
         if (!isOpen(row, col)) {
-            grid[row][col] = true;
+            grid[row - 1][col - 1] = true;
             openSitesCount++;
             connectToNeighbors(row, col);
         }
     }
     
-    // is site open?
+    // Returns true if the site is not blocked
     public boolean isOpen(int row, int col) { 
         validateRange(row, col);
-        return grid[row][col];
+        return grid[row - 1][col -1];
     }
     
     // is site connected to top numbers (i.e. virtual top)?
@@ -55,49 +56,69 @@ public class Percolation {
         return uf.connected(virtualTop, indexOf(row, col));
     }
     
-    // number of open sites
+    // Returns number of open sites
     public int numberOfOpenSites() {
         return openSitesCount;
     }
     
-    // is site connected to top and bottom?
+    // Returns true if top is connected to bottom through open sites
     public boolean percolates() {
         return uf.connected(virtualTop, virtualBottom);
+    }
+    
+    // MAIN 
+    public static void main(String[] args) {
+        int[] trials;
+        int r = 0;
+        int c = 0;
+        int n = StdIn.readInt();
+        Percolation p = new Percolation(n);
+        
+        while (StdIn.hasNextLine() && StdIn.hasNextChar() && !p.percolates()) {
+            r = StdIn.readInt();
+            c = StdIn.readInt();
+            p.open(r, c);
+        }
+        StdOut.println("Percolates at: " + r + "  " + c);
     }
     
     /**************************
      * Private utility methods
      **************************/
     
+    // Get index of row and column from a grid with starting index 0
+    // Assignment requires inputs of 1 or greater so this accounts it.
     private int indexOf(int row, int col) {
-        return N * row + col;
+        return N * (row - 1) + (col - 1);
     }
     
-    // throws error if number is not in range
+    // Throws error if number is not in range
     private void validateRange(int row, int col) {
-        if (row < 0 || row > (N - 1) || col < 0 || col > (N - 1))  {
-            throw new java.lang.IndexOutOfBoundsException("Number not within range");
+        if (row < 1 || row > N || col < 1 || col > N)  {
+            throw new java.lang.IndexOutOfBoundsException(
+                "Numbers " + row + " " + col + " not within range"
+            );
         }
     }
     
-    // if neighbors are open, then connect
+    // If neighbors are open, then connect
     private void connectToNeighbors(int row, int col) {
-        if (col != 0) {
+        if (col != 1) {
             if (isOpen(row, col - 1)) {
                 uf.union(indexOf(row, col), indexOf(row, col - 1));
             }
         }
-        if (col != (N - 1)) {
+        if (col != N) {
             if (isOpen(row, col + 1)) {
                 uf.union(indexOf(row, col), indexOf(row, col + 1));
             }
         }
-        if (row != 0) { 
+        if (row != 1) { 
             if (isOpen(row - 1, col)) {
                 uf.union(indexOf(row, col), indexOf(row - 1, col));
             }
         }
-        if (row != (N - 1)) {
+        if (row != N) {
             if (isOpen(row + 1, col)) {
                 uf.union(indexOf(row, col), indexOf(row + 1, col));
             }
