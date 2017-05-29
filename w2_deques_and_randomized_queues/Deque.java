@@ -1,44 +1,28 @@
-/*
-Write a generic data type for a deque and a randomized queue. The goal of this
-assignment is to implement elementary data structures using arrays and linked 
-lists, and to introduce you to generics and iterators.
-
-Dequeue. A double-ended queue or deque (pronounced "deck") is a generalization
-of a stack and a queue that supports adding and removing items from either the 
-front or the back of the data structure. Create a generic data type Deque that 
-implements the following API:
-
-Do not call library functions except those in StdIn, StdOut, StdRandom, 
-java.lang, java.util.Iterator, and java.util.NoSuchElementException.
-
-With an array implementation:
-you can have both overflow and underflow
-you should set deleted elements to null 
-With a linked-list implementation:
-you can have underflow
-overflow is a global out-of-memory condition
-there is no reason to set deleted elements to null
-
-
-*/
+/******************************************************************************
+ *  Compilation:  javac Deque.java
+ *  Execution:    java Deque
+ *  Dependencies: Iterator
+ *
+ *  Creates Deque - adds and removes an item from either end
+ *
+ ******************************************************************************/
 
 import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
-    private class Node {
-        Item item;
-        Node next;
-        Node previous;
+    private class Node<Item> {
+        private Item item;
+        private Node next;
+        private Node previous;
     }
-    private Node first;
-    private Node last;
-    private int N;
+    private Node<Item> first;
+    private Node<Item> last;
+    private int num = 0;
     
     // Construct an empty deque
     public Deque() {
-         first = null;
-         last = null;
-         N = 0;
+        first = null;
+        last = null;
     }
     
     // Is the deque empty?
@@ -48,89 +32,104 @@ public class Deque<Item> implements Iterable<Item> {
     
     // Return number of items on the deque
     public int size() {
-        return N;
+        return num;
     }
     
-    // add the item to the front
+    // Add the item to the front
     public void addFirst(Item item) {
-        if (isEmpty()) {
-            createFirstNode(item);
-        } else {
-            Node oldFirst = first;
-            Node n = new Node();
-            n.item = item;
-            n.next = oldFirst;
-            n.previous = null;
-            first = n;
+        if (item == null) throw new java.lang.NullPointerException("Item cannot be null");
+        Node<Item> oldFirst = first;
+        first = new Node<Item>();
+        first.item = item;
+        
+        if (isEmpty()) { 
+            last = first;
+        }
+        else {
+            first.next = oldFirst;
             oldFirst.previous = first;
-            N++;
         }
+        num++;
     }
-    // add the item to the end
-    public void addLast(Item item) {
-        if (isEmpty()) {
-            createFirstNode(item);
-        } else {
-            Node oldLast = last;
-            Node n = new Node();
-            n.item = item;
-            n.next = null;
-            n.previous = oldLast;
-            last = n;
-            oldLast.next = last;
-            N++;
-        }
     
+    // Add the item to the end
+    public void addLast(Item item) {
+        if (item == null) throw new java.lang.NullPointerException("Item cannot be null");
+        Node<Item> oldLast = first;
+        last = new Node<Item>();
+        last.item = item;
+            
+        if (isEmpty()) { 
+            first = last;
+        }
+        else {
+            last.next = null;
+            last.previous = oldLast;
+            oldLast.next = last;
+        }
+        num++;
     }
+    
     // remove and return the item from the front
     public Item removeFirst() {
-        if (isEmpty()) {
-            // raise error
-        } else {
-            Node oldFirst = first;
-            Node n = oldFirst.next
-            n.previous = null;
-            first = n;
-            N--;
+        if (isEmpty()) throw new java.util.NoSuchElementException("Deque is empty");
+        Item item = first.item;
+            
+        if (size() == 1) {
+            first = null;
+            last = null;
+        } 
+        else {
+            first = first.next;
+            first.previous = null;
         }
+        num--;
+        return item;
     }
-    // remove and return the item from the end
+    
+    // Remove and return the item from the end
     public Item removeLast() {
-        if (isEmpty()) {
-            // raise error
-        } else {
-            Node oldLast = last;
-            Node n = oldLast.previous;
-            n.next = null;
-            last = n;
-            N--;
+        if (isEmpty()) throw new java.util.NoSuchElementException("Deque is empty");
+        Item item = last.item;
+            
+        if (size() == 1) {
+            first = null;
+            last = null;
+        } 
+        else {
+            last = last.previous;
+            last.next = null;
+        }
+        num--;
+        return item;
     }
-    // return an iterator over items in order from front to end
-    public Iterator<Item> iterator() {
     
-        for (Iterator i= new IteratorTest(); i.hasNext(); ) {
-            Integer mynumber = (Integer)i.next();
-            System.out.println("Next Number is: " + mynumber);
+    // Return an independent iterator over items in random order
+    public Iterator<Item> iterator() {
+        return new DequeIterator();
+    }
+    
+    private class DequeIterator implements Iterator<Item> {
+        private Node<Item> current = first;
+        
+        @Override
+        public boolean hasNext() { return current != null; }
+        
+        @Override
+        public void remove() { 
+            throw new java.lang.UnsupportedOperationException();
+        }
+        
+        public Item next() {
+            if (!hasNext()) throw new java.util.NoSuchElementException();
+            Item item = current.item;
+            current = current.next;
+            return item;
         }
     }
-
     
-    
+    // Unit testing (optional)
+    public static void main(String[] args) {
+       
     }
-     // unit testing (optional)
-    //public static void main(String[] args) {}
-    
-    /*************************
-    ** Private utility methods
-    *************************/
-    private void createFirstNode(Item item) {
-        Node n = new Node();
-        n.item = item;
-        n.next = null;
-        n.previous = null;
-        first = n;
-        last = n;
-        N++;
-    }
-    
 }
