@@ -76,8 +76,9 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = first.item;
             
         if (size() == 1) {
-            first = null;
-            last = null;
+            Node empty = new Node<Item>();
+            first = empty;
+            last = empty;
         } 
         else {
             first = first.next;
@@ -93,8 +94,9 @@ public class Deque<Item> implements Iterable<Item> {
         Item item = last.item;
             
         if (size() == 1) {
-            first = null;
-            last = null;
+            Node empty = new Node<Item>();
+            first = empty;
+            last = empty;
         } 
         else {
             last = last.previous;
@@ -112,10 +114,10 @@ public class Deque<Item> implements Iterable<Item> {
     private class DequeIterator implements Iterator<Item> {
         private Node<Item> current = first;
         
-        @Override
-        public boolean hasNext() { return current != null; }
+        public boolean hasNext() { 
+            return current != null;
+        }
         
-        @Override
         public void remove() { 
             throw new java.lang.UnsupportedOperationException();
         }
@@ -130,6 +132,22 @@ public class Deque<Item> implements Iterable<Item> {
     
     // Unit testing (optional)
     public static void main(String[] args) {
-       
+
+        Deque<String> d = new Deque<String>();
+        
+        d.addFirst("apple");
+        d.addFirst("banana");
+        d.addFirst("orange");
+        d.addFirst("pear");
+        
+        d.removeFirst();
+
+        Iterator i = d.iterator();
+
+        System.out.println(i.next());
+        System.out.println(i.next());
+        System.out.println(i.next());
+        // Should throw exception
+        System.out.println(i.next());
     }
 }

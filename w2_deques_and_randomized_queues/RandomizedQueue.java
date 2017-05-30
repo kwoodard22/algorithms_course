@@ -37,7 +37,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     
     // Remove and return a random item
     public Item dequeue() {
-        if (isEmpty()) throw new java.util.NoSuchElementException("Queue is empty");
+        if (isEmpty()) throw new java.util.NoSuchElementException();
         int index = StdRandom.uniform(num);
         Item random = queue[index];
         
@@ -49,7 +49,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     
     // Return (but do not remove) a random item
     public Item sample() {
-        if (size() == 0) throw new java.util.NoSuchElementException("Queue is empty");
+        if (size() == 0) throw new java.util.NoSuchElementException();
         return queue[StdRandom.uniform(num)];
     }
     
@@ -71,22 +71,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             }
         }
         
-        @Override
-        public boolean hasNext() { 
+        public boolean hasNext() {
             return size > 0;
         }
         
-        @Override
-        public void remove() { 
+        public void remove() {
             throw new java.lang.UnsupportedOperationException();
         }
         
-        @Override
         public Item next() {
             if (!hasNext()) throw new java.util.NoSuchElementException();
             
             int randomIndex = StdRandom.uniform(size);
             Item randomItem = copy[randomIndex];
+            
             if (randomIndex != size - 1) {
                 copy[randomIndex] = copy[size - 1];
             }
@@ -104,7 +102,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     * Private utility methods
     **************************/
     private void resize(int capacity) {
-        Item[] copy = new Item[capacity];
+        Item[] copy = (Item[]) new Object[capacity];
         for (int i = 0; i < num; i++)
             copy[i] = queue[i];
         queue = copy;
