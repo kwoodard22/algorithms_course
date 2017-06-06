@@ -4,7 +4,6 @@
  *  Dependencies: none
  *  
  *  An immutable data type for points in the plane.
- *  For use on Coursera, Algorithms Part I programming assignment.
  *
  ******************************************************************************/
 import java.util.Comparator;
@@ -55,9 +54,16 @@ public class Point implements Comparable<Point> {
      *         point; and a positive integer if this point is greater than the
      *         argument point
      */
-    // Compare two points by y-coordinates, breaking ties by x-coordinates
     public int compareTo(Point that) {
-        this.y < that.y || (this.y == that.y && this.x < that.x)
+        if (this.y == that.y && this.x == that.x) {
+            return 0;
+        } 
+        else if ((this.y < that.y) || (this.y == that.y && this.x < that.x)) {
+            return -1;
+        } 
+        else {
+            return 1; 
+        }
     }
     
     
@@ -72,9 +78,23 @@ public class Point implements Comparable<Point> {
      * @param  that the other point
      * @return the slope between this point and the specified point
      */
-    // The slope between this point and that point
     public double slopeTo(Point that) {
-        (this.y - that.y)/(this.x - that.x)
+        
+        // Same point
+        if (this.x == that.x && this.y == that.y) {
+            return Double.NEGATIVE_INFINITY;
+        }
+        
+        double difX = that.x - this.x;
+        double difY = that.y - this.y;
+
+        // Vertical
+        if (difX == 0.0) return Double.POSITIVE_INFINITY;
+
+        // Horizontal
+        if (difY == 0.0) return +0.0;
+
+        return difY / difX;
     }
     
         /**
@@ -85,13 +105,24 @@ public class Point implements Comparable<Point> {
      */
     // Compare two points by slopes they make with this point
     public Comparator<Point> slopeOrder() {
-        slopeTo
+        return new SlopeOrderComparator();
+    }
+          
+    private class SlopeOrderComparator implements Comparator<Point> {
+        
+        public int compare(Point p1, Point p2) {
+            double slopeDiff = slopeTo(p1) - slopeTo(p2);
+            
+            if (slopeDiff > 0) return 1; 
+            if (slopeDiff < 0) return -1;
+            return 0; // if equal
+        }
     }
 
     /**
      * Unit tests the Point data type.
      */
     public static void main(String[] args) {
-        /* YOUR CODE HERE */
+        
     }
 }
